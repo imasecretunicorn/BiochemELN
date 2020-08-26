@@ -1,0 +1,73 @@
+---
+title: "Pipette Lab"
+author: "Lauren Harris"
+output: html_document
+---
+# Pipette Lab
+Date of Lab: 08/19/2020
+
+## **Procedure**
+1. A 100 microliter and 1000 microliter pipette were obtained
+1. A beaker containing 10 mL of water was obtained and brought to a work station with a scale and weighing dish. 
+1. The scale was zeroed and the weighing dish was placed on the scale. The initial mass was recorded in the first row beneath "before". 
+1. The pipette was set to 100 microliters (10% of the total volume) and a tip was placed on the end of the pipetter
+1. Holding the pipette straight up and down, the plunger on the end of the pipette was depressed to the first stop and the tip was placed into the water.
+1. Slowly relasing the plunger, water was drawn into the pipette tip and the pipette was removed from the water and transferred above the weighing dish
+1. The plunger was depressed all the way to remove the water into the weighing dish. The final mass was recorded in the first row under "After" and also the next row under "Before".
+1. Increasing the pipette volume by 15%, steps 5-7 were repeated until 100% of the volume of the pipette (or 1000 microliters) was reached. 
+1. Using a 100 microliter pipette, the volume was set to 100 microliters and a tip was placed on the end of the pipette.
+1. Steps 5-7 were repeated decreasing the volume of the pipette by 15% each time until 10% of the total volume (or 10 microliters) was reached. 
+1. The mass of water pipetted onto the wieghing dish was calculated by substracting the value in the "After" column with the corresponding value in the "Before" column.
+1. The line of best fit was calculated for each pipette using the lm function 
+1. A plot of the mass of the water pipetted as a function of the volume set on the pipetter was created using different symbold for the different pipetters
+1. The calculated best fit lines from each of the lm functions was added to the plot using a different line type for each plot. 
+1. A legend was added to the added to the plot and the results were analyzed. 
+
+## **Results**
+### Data
+```{r}
+pipetteframe <- read.table(header=TRUE, text="
+Pipette Volume  Before  After
+1000D   100     3.43    3.52
+1000D   250     3.52    3.77
+1000D   400     3.77    4.17
+1000D   550     4.17    4.69
+1000D   700     4.69    5.38
+1000D   850     5.38    6.19
+1000D   1000    6.19    7.17
+100A    100.0   7.17    7.27
+100A    85.0    7.27    7.35
+100A    70.0    7.35    7.42
+100A    55.0    7.42    7.47
+100A    40.0    7.47    7.51
+100A    25.0    7.51    7.53
+100A    10.0    7.53    7.54")
+pipetteframe$Mass <- pipetteframe$After - pipetteframe$Before
+p1000lm <- lm(Mass ~ Volume, data=pipetteframe, subset=(Pipette=="1000D"))
+summary(p1000lm)
+p100lm <- lm(Mass ~ Volume, data=pipetteframe, subset=(Pipette=="100A"))
+
+```
+
+#### Graph
+
+```{r}
+plot(Mass ~ Volume, data=pipetteframe, type="n",
+     main="Mass of water pipetted as a function of Volume set on the pipetter",
+     xlab=expression(paste("Volume (", mu, "L)")),
+     ylab="Mass (g)")
+points(Mass ~ Volume, data=pipetteframe, pch=1, subset=(Pipette=="1000D"))
+points(Mass ~ Volume, data=pipetteframe, pch=2, subset=(Pipette=="100A"))
+abline(p1000lm, lty=1)
+abline(p100lm, lty=2)
+legend(0,1,legend=c("1000D","100A"),pch=1:2, lty=1:2)
+#Graph of the mass of water pippetted as a function of volume set on the pipetter
+```
+
+### Analysis
+* Were the slopes of the linear models what you expected? Consider the units associated with your calculation of the slope.
+  * Yes, I expected the slope to be reflective of water density which is about 1 g/ml. In both cases the slope was about 0.001 (p1000lm=0.00139 and p100lm=0.00098) which, with the unit conversion of ml to microliters, is as expected.
+* Were the intercepts of your linear models statistically significant? Should they be?
+  * Yes they are statitically significant and they should be. Having statistically significant intercepts indicate that changes in the independent variable correlate strongly with shifts in the dependent variable. This is expected because as more water is added, you would expect the mass to increase proportionately. 
+* Were the lines on the graphs distinguishable? Were they dramatically different? What does this tell you? Include a reference to your figure in your discussion.
+  * Until around 250 microliters the lines are basically indistinguishable. The slope of the data for the 100 microliter pipette continues as if data had been collected past the 100 microliter point and is therefore not the exact same as the larger pipetter. The differences, since they would be expected to be the same, could be from user error or the scale used being less accurate by rounding to the hundredths place instead of the thousandths. 

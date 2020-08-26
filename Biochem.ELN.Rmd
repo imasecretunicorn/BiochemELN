@@ -1,0 +1,13 @@
+---
+title: "Biochem Electronic Lab Notebook"
+output: 
+  html_notebook :
+    toc : yes
+    toc_depth: 1
+  
+---
+
+```{r child = 'PipetteLab.Rmd'}
+```
+
+
